@@ -46,13 +46,13 @@ public class MemberService {
     }
 
     private void validateMemberNickname(Member joinMember) {
-        if(memberRepository.findByNickname(joinMember.getNickname()).isPresent()) {
+        if (memberRepository.findByNickname(joinMember.getNickname()).isPresent()) {
             throw new RuntimeException("이미 존재하는 닉네임 입니다");
         }
     }
 
     private void validateMemberId(Member joinMember) {
-        if(memberRepository.findByNickname(joinMember.getUsername()).isPresent()) {
+        if (memberRepository.findByNickname(joinMember.getUsername()).isPresent()) {
             throw new RuntimeException("이미 존재하는 아이디 입니다");
         }
     }
@@ -77,7 +77,7 @@ public class MemberService {
                 .refreshToken(tokenInfo.getRefreshToken())
                 .username(loginDto.getUsername())
                 .build();
-        if(tokenRepository.existsByUsername(refreshToken.getUsername())) {
+        if (tokenRepository.existsByUsername(refreshToken.getUsername())) {
             log.info("기존의 refresh 토큰 삭제");
             tokenRepository.deleteByUsername(refreshToken.getUsername());
         }
@@ -87,10 +87,10 @@ public class MemberService {
 
     private void validateLogin(LoginDto loginDto) {
         Optional<Member> findMem = memberRepository.findByUsername(loginDto.getUsername());
-        if(findMem.isEmpty()) {
+        if (findMem.isEmpty()) {
             throw new UsernameNotFoundException("존재하지 않는 아이디 입니당");
         }
-        if(!passwordEncoder.matches(loginDto.getPassword(), findMem.get().getPassword())) {
+        if (!passwordEncoder.matches(loginDto.getPassword(), findMem.get().getPassword())) {
             throw new RuntimeException("잘못된 비밀번호 입니당");
         }
     }

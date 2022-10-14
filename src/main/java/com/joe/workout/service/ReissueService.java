@@ -2,6 +2,7 @@ package com.joe.workout.service;
 
 import com.joe.workout.config.JwtTokenProvider;
 import com.joe.workout.dto.TokenInfo;
+import com.joe.workout.dto.TokenRequestDto;
 import com.joe.workout.entity.Member;
 import com.joe.workout.entity.MemberRepository;
 import com.joe.workout.entity.RefreshToken;
@@ -22,17 +23,19 @@ public class ReissueService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final MemberRepository memberRepository;
 
-    public TokenInfo refresh(String refreshToken) {
+    public TokenInfo refresh(TokenRequestDto tokenRequestDto) {
         // Refresh 토큰 유효성 검사
-        if(refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
-            // refresh 토큰 쪼개서 username 가져오기
-            String username = jwtTokenProvider.parseClaims(refreshToken).getSubject();
-            System.out.println(username);
+        if (tokenRequestDto.getRefreshToken() != null && jwtTokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
+            // access 토큰 쪼개서 username 가져오고 refresh 토큰과 비교
+            String username = jwtTokenProvider.parseClaims(tokenRequestDto.getAccessToken()).getSubject();
+            if (!Objects.equals(username, jwtTokenProvider.parseClaims(tokenRequestDto.getRefreshToken()).getSubject())) {
+                throw new JwtException("유효하지 않은 refresh 토큰 입니당");
+            }
             RefreshToken findRefreshToken = refreshTokenRepository.findByUsername(username);
-            if(findRefreshToken == null) {
+            if (findRefreshToken == null) {
                 throw new UsernameNotFoundException("사용자를 찾을 수 없어용");
             }
-            if(!findRefreshToken.getRefreshToken().equals(refreshToken)) {
+            if (!findRefreshToken.getRefreshToken().equals(tokenRequestDto.getRefreshToken())) {
                 throw new JwtException("유효하지 않은 토큰 입니당");
             }
 
@@ -44,7 +47,7 @@ public class ReissueService {
             String newAccessToken = jwtTokenProvider.recreateAccessToken(username, authorities);
 
             // Refresh 토큰 만료시간 1일 미만일 시 Refresh 토큰도 재발급
-            if(jwtTokenProvider.reissueRefreshToken(refreshToken)) {
+            if (jwtTokenProvider.reissueRefreshToken(tokenRequestDto.getRefreshToken())) {
                 String newRefreshToken = jwtTokenProvider.createRefreshToken(username);
                 return TokenInfo.builder()
                         .accessToken(newAccessToken)
@@ -55,7 +58,7 @@ public class ReissueService {
 
             return TokenInfo.builder()
                     .accessToken(newAccessToken)
-                    .refreshToken(refreshToken)
+                    .refreshToken(tokenRequestDto.getRefreshToken())
                     .grantType("Bearer")
                     .build();
         }
