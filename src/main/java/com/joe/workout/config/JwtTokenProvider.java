@@ -79,7 +79,7 @@ public class JwtTokenProvider {
         // 토큰 복호화 작업
         Claims claims = parseClaims(token);
 
-        if(claims.get("auth") == null) {
+        if (claims.get("auth") == null) {
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         }
 
@@ -139,7 +139,7 @@ public class JwtTokenProvider {
         Date now = new Date();
 
         Date expTime = new Date(claims.getExpiration().getTime() - Duration.ofDays(1).toMillis());
-        if(expTime.before(now)) {
+        if (expTime.before(now)) {
             return true;
         }
         return false;
