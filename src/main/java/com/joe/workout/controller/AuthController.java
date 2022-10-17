@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
-public class MemberController {
+public class AuthController {
     private final MemberService memberService;
 
     @PostMapping("/join")
