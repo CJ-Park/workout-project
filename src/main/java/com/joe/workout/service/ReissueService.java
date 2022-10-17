@@ -46,13 +46,13 @@ public class ReissueService {
                     .collect(Collectors.joining(","));
             String newAccessToken = jwtTokenProvider.recreateAccessToken(username, authorities);
 
-            // Refresh 토큰 만료시간 1일 미만일 시 refresh 토큰도 재발급 및 원래 refresh 토큰 삭제
+            // Refresh 토큰 만료시간 1일 미만일 시 refresh 토큰 update 후 발급
             if (jwtTokenProvider.reissueRefreshToken(tokenRequestDto.getRefreshToken())) {
-                String newRefreshToken = jwtTokenProvider.createRefreshToken(username);
-                refreshTokenRepository.deleteByUsername(username);
+                RefreshToken refreshToken = findRefreshToken.update(jwtTokenProvider.createRefreshToken(username));
+                refreshTokenRepository.save(refreshToken);
                 return TokenInfo.builder()
                         .accessToken(newAccessToken)
-                        .refreshToken(newRefreshToken)
+                        .refreshToken(refreshToken.getRefreshToken())
                         .grantType("Bearer")
                         .build();
             }

@@ -1,6 +1,5 @@
 package com.joe.workout.controller;
 
-import com.joe.workout.config.JwtAuthenticationFilter;
 import com.joe.workout.dto.JoinDto;
 import com.joe.workout.dto.LoginDto;
 import com.joe.workout.dto.TokenInfo;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 public class MemberController {
     private final MemberService memberService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @PostMapping("/join")
     public ResponseEntity<String> join(@RequestBody JoinDto joinDto) {
