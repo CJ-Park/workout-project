@@ -22,7 +22,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (request.getServletContext().toString().equals("/users/login") || request.getServletContext().toString().equals("/users/join") || request.getServletContext().toString().equals("/api/reissue")) {
+        if (request.getServletContext().toString().equals("/login") || request.getServletContext().toString().equals("/join")) {
             chain.doFilter(request, response);
         }
 
