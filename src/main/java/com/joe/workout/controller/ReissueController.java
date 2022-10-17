@@ -18,7 +18,7 @@ public class ReissueController {
 
     @PostMapping("/api/reissue")
     public ResponseEntity<TokenInfo> validateRefreshToken(@RequestBody TokenRequestDto tokenRequestDto) {
-        log.info("refresh 진행");
+        log.info("재발급 진행");
         TokenInfo tokenInfo = reissueService.refresh(tokenRequestDto);
         return ResponseEntity.ok(tokenInfo);
     }

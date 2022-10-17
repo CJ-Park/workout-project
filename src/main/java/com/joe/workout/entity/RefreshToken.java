@@ -23,4 +23,9 @@ public class RefreshToken {
 
     @Column(nullable = false, unique = true)
     private String username;
+
+    public RefreshToken update(String newRefreshToken) {
+        this.refreshToken = newRefreshToken;
+        return this;
+    }
 }

@@ -8,6 +8,7 @@ import com.joe.workout.entity.Member;
 import com.joe.workout.entity.MemberRepository;
 import com.joe.workout.entity.RefreshToken;
 import com.joe.workout.entity.RefreshTokenRepository;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -67,7 +68,7 @@ public class MemberService {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
 
-        // 2. 실제 검증
+        // 2. 실제 검증 및 authentication 객체 생성
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(authenticationToken);
 
@@ -78,8 +79,8 @@ public class MemberService {
                 .username(loginDto.getUsername())
                 .build();
         if (tokenRepository.existsByUsername(refreshToken.getUsername())) {
-            log.info("기존의 refresh 토큰 삭제");
-            tokenRepository.deleteByUsername(refreshToken.getUsername());
+            log.info("refresh 토큰 중복 에러");
+            throw new JwtException("이미 존재하는 refresh 토큰 입니당");
         }
         tokenRepository.save(refreshToken);
         return tokenInfo;
